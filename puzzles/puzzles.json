@@ -1,0 +1,14 @@
+{
+  "1": {
+    "imgPath": "puzzle1.svg",
+    "answer": "robot"
+  },
+  "2": {
+    "imgPath": "puzzle2.svg",
+    "answer": "cloud"
+  },
+  "3": {
+    "imgPath": "puzzle3.svg",
+    "answer": "code"
+  }
+}

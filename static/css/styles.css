@@ -1,0 +1,60 @@
+.puzzle-image-container {
+    max-height: 500px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.puzzle-image-container img {
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.stats {
+    margin: 1rem 0;
+}
+
+.stats .badge {
+    margin: 0 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+}
+
+.feedback-correct {
+    animation: fadeIn 0.5s ease-in;
+}
+
+.feedback-wrong {
+    animation: shake 0.5s ease-in-out;
+}
+
+.puzzle-card {
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.puzzle-card:hover {
+    transform: translateY(-5px);
+}
+
+.puzzle-card.completed {
+    border-color: var(--bs-success);
+}
+
+.puzzle-card .points {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

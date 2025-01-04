@@ -1,0 +1,8 @@
+<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Robot puzzle -->
+  <rect x="100" y="100" width="200" height="200" fill="#2a2a2a" rx="20"/>
+  <circle cx="150" y="150" r="20" fill="#00ff00"/>
+  <circle cx="250" y="150" r="20" fill="#00ff00"/>
+  <rect x="140" y="200" width="120" height="20" fill="#00ff00"/>
+  <text x="200" y="350" text-anchor="middle" fill="#fff" font-size="24">What am I?</text>
+</svg>
