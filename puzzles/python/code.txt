@@ -1,0 +1,102 @@
+import pymupdf  # PyMuPDF
+from PIL import Image
+
+def extract_rectangles_from_pdf(pdf_path, output_folder, top_left_coords, width, height, start):
+    """
+    Extract rectangles from a one-page PDF based on top-left coordinates,
+    width, and height, and save them as images.
+
+    Args:
+        pdf_path (str): Path to the PDF file.
+        output_folder (str): Folder to save the output images.
+        top_left_coords (list of tuple): List of (x, y) coordinates for the top-left points.
+        width (int): Width of each rectangle.
+        height (int): Height of each rectangle.
+    """
+    # Open the PDF
+    pdf_document = pymupdf.open(pdf_path)
+
+    # Ensure it's a single-page PDF
+    if len(pdf_document) != 1:
+        raise ValueError("The script only supports single-page PDFs.")
+
+    # Get the first page
+    page = pdf_document[0]
+
+    # Extract each rectangle
+    for i, (x0, y0) in enumerate(top_left_coords):
+        x1 = x0 + width
+        y1 = y0 + height
+        rect = pymupdf.Rect(x0, y0, x1, y1)
+        pixmap = page.get_pixmap(clip=rect, matrix=pymupdf.Matrix(5, 5))
+
+        # Convert to PIL image
+        image = Image.frombytes("RGB", [pixmap.width, pixmap.height], pixmap.samples)
+
+        # Save the image
+        output_path = f"{output_folder}/rectangle_{start + i + 1}.png"
+        image.save(output_path)
+        print(f"Saved rectangle {start + i + 1} to {output_path}")
+
+    # Close the PDF
+    pdf_document.close()
+
+# Example usage
+output_folder = "output"  # Folder to save extracted images
+
+def do_file(pdf_path, start):
+    top_left_coords = [
+        (52, 122),  # Top-left (x, y) of the first rectangle
+        (52+160+10, 122),  # Top-left (x, y) of the second rectangle
+        (52+160+10+160+10, 122),  # Top-left (x, y) of the third rectangle
+        (52, 122+135+35),  # Top-left (x, y) of the fourth rectangle
+        (52+160+10, 122+135+35),  # Top-left (x, y) of the fifth rectangle
+        (52+160+10+160+10, 122+135+35),  # Top-left (x, y) of the sixth rectangle
+        (52, 122+135+35+135+35-5),  # Top-left (x, y) of the seventh rectangle
+        (52+160+10, 122+135+35+135+35-5),  # Top-left (x, y) of the eighth rectangle
+        (52+160+10+160+10, 122+135+35+135+35-5),  # Top-left (x, y) of the ninth rectangle
+
+    ]
+    width = 160  # Width of each rectangle
+    height = 135  # Height of each rectangle
+
+    extract_rectangles_from_pdf(pdf_path, output_folder, top_left_coords, width, height, start)
+
+import os
+os.makedirs(output_folder, exist_ok=True)
+
+
+pdfs = [
+   "free-printable-rebus-puzzles-1.pdf",
+   "free-printable-rebus-puzzles-2.pdf",
+   "free-printable-rebus-puzzles-3.pdf",
+   "free-printable-rebus-puzzles-4.pdf",
+   "rebus-puzzle-worksheet-printable-5.pdf",
+   "rebus-puzzles-worksheet-pdf-6.pdf",
+   "rebus-puzzles-worksheet-7.pdf",
+   "rebus-puzzles-free-8.pdf",
+   "hard-rebus-puzzles-9.pdf",
+   "tricky-rebus-puzzles-10.pdf",
+   "rebus-puzzles-with-answers-12.pdf",
+   "rebus-puzzles-13.pdf",
+   "rebus-puzzles-14-idioms.pdf",
+   "rebus-puzzles-15-idioms.pdf",
+   "rebus-puzzles-16.pdf",
+   "adult-rebus-puzzles-17.pdf",
+   "adult-rebus-puzzles-18.pdf",
+   "adult-rebus-puzzles-19.pdf",
+   "rebus-puzzles-20.pdf",
+    "rebus-puzzles-with-answers-pdf-21.pdf",
+    "rebus-puzzles-22.pdf",
+    "hard-rebus-puzzles-23.pdf",
+    "rebus-puzzles-24.pdf",
+    "rebus-puzzle-game-25.pdf",
+    "printable-rebus-puzzles-pdf-26.pdf",
+    "printable-rebus-puzzles-pdf-27.pdf",
+    "printable-rebus-puzzles-28.pdf",
+]
+
+start = 0
+for pdf in pdfs:
+    do_file(pdf, start)
+    start += 9

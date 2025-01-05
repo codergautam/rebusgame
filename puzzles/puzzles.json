@@ -1,14 +1,194 @@
 {
   "1": {
-    "imgPath": "puzzle1.svg",
-    "answer": "robot"
+    "imgPath": "rectangle_1.png",
+    "answer": "For once in my life"
   },
   "2": {
-    "imgPath": "puzzle2.svg",
-    "answer": "cloud"
+    "imgPath": "rectangle_2.png",
+    "answer": "Forget it"
   },
   "3": {
-    "imgPath": "puzzle3.svg",
-    "answer": "code"
+    "imgPath": "rectangle_3.png",
+    "answer": "Try to understand"
+  },
+  "4": {
+    "imgPath": "rectangle_4.png",
+    "answer": "Travel overseas"
+  },
+  "5": {
+    "imgPath": "rectangle_5.png",
+    "answer": "Breakfast"
+  },
+  "6": {
+    "imgPath": "rectangle_6.png",
+    "answer": "Downtown"
+  },
+  "7": {
+    "imgPath": "rectangle_7.png",
+    "answer": "Eyeshadow"
+  },
+  "8": {
+    "imgPath": "rectangle_8.png",
+    "answer": "Stepfather"
+  },
+  "9": {
+    "imgPath": "rectangle_9.png",
+    "answer": "Once upon a time"
+  },
+  "10": {
+    "imgPath": "rectangle_10.png",
+    "answer": "Potatoes"
+  },
+  "11": {
+    "imgPath": "rectangle_11.png",
+    "answer": "3D movie"
+  },
+  "12": {
+    "imgPath": "rectangle_12.png",
+    "answer": "Top secret"
+  },
+  "13": {
+    "imgPath": "rectangle_13.png",
+    "answer": "Trip around the world"
+  },
+  "14": {
+    "imgPath": "rectangle_14.png",
+    "answer": "Lemonade"
+  },
+  "15": {
+    "imgPath": "rectangle_15.png",
+    "answer": "Long legs"
+  },
+  "16": {
+    "imgPath": "rectangle_16.png",
+    "answer": "Advice"
+  },
+  "17": {
+    "imgPath": "rectangle_17.png",
+    "answer": "Spaceman"
+  },
+  "18": {
+    "imgPath": "rectangle_18.png",
+    "answer": "Big bad wolf"
+  },
+  "19": {
+    "imgPath": "rectangle_19.png",
+    "answer": "Many thanks"
+  },
+  "20": {
+    "imgPath": "rectangle_20.png",
+    "answer": "Download"
+  },
+  "21": {
+    "imgPath": "rectangle_21.png",
+    "answer": "No idea"
+  },
+  "22": {
+    "imgPath": "rectangle_22.png",
+    "answer": "Comfortable"
+  },
+  "23": {
+    "imgPath": "rectangle_23.png",
+    "answer": "Forty years"
+  },
+  "24": {
+    "imgPath": "rectangle_24.png",
+    "answer": "Excuse me"
+  },
+  "25": {
+    "imgPath": "rectangle_25.png",
+    "answer": "Forehead"
+  },
+  "26": {
+    "imgPath": "rectangle_26.png",
+    "answer": "Good looking"
+  },
+  "27": {
+    "imgPath": "rectangle_27.png",
+    "answer": "Waterfall"
+  },
+  "28": {
+    "imgPath": "rectangle_28.png",
+    "answer": "Wake up"
+  },
+  "29": {
+    "imgPath": "rectangle_29.png",
+    "answer": "Tuna fish"
+  },
+  "30": {
+    "imgPath": "rectangle_30.png",
+    "answer": "Foreign language"
+  },
+  "31": {
+    "imgPath": "rectangle_31.png",
+    "answer": "Seahorse"
+  },
+  "32": {
+    "imgPath": "rectangle_32.png",
+    "answer": "Middle-aged"
+  },
+  "33": {
+    "imgPath": "rectangle_33.png",
+    "answer": "Broken heart"
+  },
+  "34": {
+    "imgPath": "rectangle_34.png",
+    "answer": "Seesaw"
+  },
+  "35": {
+    "imgPath": "rectangle_35.png",
+    "answer": "Miss you"
+  },
+  "36": {
+    "imgPath": "rectangle_36.png",
+    "answer": "Teabag"
+  },
+  "37": {
+    "imgPath": "rectangle_37.png",
+    "answer": "Four-wheel drive"
+  },
+  "38": {
+    "imgPath": "rectangle_38.png",
+    "answer": "Apple pie"
+  },
+  "39": {
+    "imgPath": "rectangle_39.png",
+    "answer": "Up to you"
+  },
+  "40": {
+    "imgPath": "rectangle_40.png",
+    "answer": "Robin Hood"
+  },
+  "41": {
+    "imgPath": "rectangle_41.png",
+    "answer": "Design"
+  },
+  "42": {
+    "imgPath": "rectangle_42.png",
+    "answer": "Engineer"
+  },
+  "43": {
+    "imgPath": "rectangle_43.png",
+    "answer": "Vegetables"
+  },
+  "44": {
+    "imgPath": "rectangle_44.png",
+    "answer": "Afternoon tea"
+  },
+  "45": {
+    "imgPath": "rectangle_45.png",
+    "answer": "Camping overnight"
+  },
+  "46": {
+    "imgPath": "rectangle_46.png",
+    "answer": "Time to go"
+  },
+  "47": {
+    "imgPath": "rectangle_47.png",
+    "answer": "Long time no see"
+  },
+  "48": {
+    "imgPath": "rectangle_48.png",
+    "answer": "Polite"
   }
 }
