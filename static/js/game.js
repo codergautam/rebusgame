@@ -6,6 +6,7 @@ class PuzzleGame {
         this.attempts = 0;
         this.timer = null;
         this.hintsRevealed = 0;
+        this.revealedLetters = new Set();
 
         this.loadPuzzles();
         this.setupEventListeners();
@@ -45,7 +46,7 @@ class PuzzleGame {
         }
 
         if (nextButton) {
-            nextButton.addEventListener('click', () => this.loadRandomPuzzle());
+            nextButton.addEventListener('click', () => this.loadNextPuzzle());
         }
     }
 
@@ -60,6 +61,38 @@ class PuzzleGame {
         }
     }
 
+    loadNextPuzzle() {
+        const completed = this.getCompletedPuzzles();
+        const currentId = parseInt(this.currentPuzzle.id);
+        const allPuzzleIds = Object.keys(this.puzzles).map(Number).sort((a, b) => a - b);
+        const currentIndex = allPuzzleIds.indexOf(currentId);
+
+        // Find the next uncompleted puzzle after current
+        let nextId = null;
+        for (let i = currentIndex + 1; i < allPuzzleIds.length; i++) {
+            if (!completed.includes(allPuzzleIds[i].toString())) {
+                nextId = allPuzzleIds[i];
+                break;
+            }
+        }
+
+        // If no uncompleted puzzles after current, find first uncompleted
+        if (nextId === null) {
+            for (let i = 0; i < currentIndex; i++) {
+                if (!completed.includes(allPuzzleIds[i].toString())) {
+                    nextId = allPuzzleIds[i];
+                    break;
+                }
+            }
+        }
+
+        if (nextId !== null) {
+            this.loadPuzzle(nextId.toString());
+        } else {
+            this.showMessage('Congratulations! You\'ve completed all puzzles!', 'success');
+        }
+    }
+
     loadRandomPuzzle() {
         const completed = this.getCompletedPuzzles();
         const available = Object.keys(this.puzzles).filter(id => !completed.includes(id));
@@ -71,12 +104,6 @@ class PuzzleGame {
 
         const randomId = available[Math.floor(Math.random() * available.length)];
         this.loadPuzzle(randomId);
-
-        // Reset UI state
-        document.getElementById('next-puzzle').classList.add('d-none');
-        document.getElementById('answer-input').disabled = false;
-        document.getElementById('submit-answer').disabled = false;
-        document.getElementById('hint-button').disabled = false;
     }
 
     loadPuzzle(id) {
@@ -90,13 +117,40 @@ class PuzzleGame {
 
         this.attempts = 0;
         this.hintsRevealed = 0;
+        this.revealedLetters.clear();
         document.getElementById('attempts').textContent = `Attempts: ${this.attempts}`;
         document.getElementById('answer-input').value = '';
         document.getElementById('feedback').classList.add('d-none');
 
+        // Reset UI state
+        document.getElementById('next-puzzle').classList.add('d-none');
+        document.getElementById('answer-input').disabled = false;
+        document.getElementById('submit-answer').disabled = false;
+        document.getElementById('hint-button').disabled = false;
+
         this.startTime = Date.now();
         this.startTimer();
         this.updateLetterSpaces();
+        this.updateNextButtonVisibility();
+    }
+
+    updateNextButtonVisibility() {
+        const completed = this.getCompletedPuzzles();
+        const currentId = parseInt(this.currentPuzzle.id);
+        const allPuzzleIds = Object.keys(this.puzzles).map(Number).sort((a, b) => a - b);
+        const currentIndex = allPuzzleIds.indexOf(currentId);
+
+        // Check if there are any uncompleted puzzles after current one
+        const hasNextUncompleted = allPuzzleIds.slice(currentIndex + 1).some(id => 
+            !completed.includes(id.toString())
+        ) || allPuzzleIds.slice(0, currentIndex).some(id => 
+            !completed.includes(id.toString())
+        );
+
+        const nextButton = document.getElementById('next-puzzle');
+        if (!hasNextUncompleted) {
+            nextButton.classList.add('d-none');
+        }
     }
 
     updateLetterSpaces(fromInput = false) {
@@ -115,8 +169,11 @@ class PuzzleGame {
                 const span = document.createElement('span');
                 span.className = 'letter-space';
 
-                // Always show revealed hints, regardless of input
-                if (letterIndex === 0 && this.hintsRevealed > wordIndex) {
+                const letterKey = `${wordIndex}-${letterIndex}`;
+
+                // Show revealed letters (first letters or random hints)
+                if ((letterIndex === 0 && this.hintsRevealed > wordIndex) || 
+                    this.revealedLetters.has(letterKey)) {
                     span.textContent = letter;
                     span.className += ' revealed';
                 } else if (fromInput) {
@@ -138,17 +195,36 @@ class PuzzleGame {
 
     showHint() {
         const words = this.currentPuzzle.answer.split(' ');
-        if (this.hintsRevealed >= words.length) {
-            this.showMessage('No more hints available!', 'warning');
-            return;
+        const allLetterPositions = [];
+
+        // First reveal first letters of each word
+        if (this.hintsRevealed < words.length) {
+            this.hintsRevealed++;
+        } else {
+            // Then reveal random letters (excluding first letters and already revealed)
+            words.forEach((word, wordIndex) => {
+                word.split('').forEach((_, letterIndex) => {
+                    const letterKey = `${wordIndex}-${letterIndex}`;
+                    if (letterIndex !== 0 && !this.revealedLetters.has(letterKey)) {
+                        allLetterPositions.push(letterKey);
+                    }
+                });
+            });
+
+            if (allLetterPositions.length > 0) {
+                const randomIndex = Math.floor(Math.random() * allLetterPositions.length);
+                this.revealedLetters.add(allLetterPositions[randomIndex]);
+            } else {
+                this.showMessage('No more hints available!', 'warning');
+                return;
+            }
         }
 
-        this.hintsRevealed++;
         this.updateLetterSpaces();
 
         // Deduct points for using hint
         const currentPoints = parseInt(document.getElementById('points').textContent.split(': ')[1]);
-        document.getElementById('points').textContent = `Points: ${Math.max(0, currentPoints - 100)}`;
+        document.getElementById('points').textContent = `Points: ${Math.max(0, currentPoints - 50)}`;
     }
 
     startTimer() {
@@ -167,8 +243,8 @@ class PuzzleGame {
         const timeElapsed = (Date.now() - this.startTime) / 1000;
         const basePoints = 1000;
         const timeDeduction = Math.floor(timeElapsed / 10) * 50;
-        const attemptsDeduction = this.attempts * 100;
-        const hintDeduction = this.hintsRevealed * 100;
+        const attemptsDeduction = this.attempts * 50;
+        const hintDeduction = (this.hintsRevealed + this.revealedLetters.size) * 50;
 
         return Math.max(100, basePoints - timeDeduction - attemptsDeduction - hintDeduction);
     }
@@ -192,6 +268,8 @@ class PuzzleGame {
             input.disabled = true;
             document.getElementById('submit-answer').disabled = true;
             document.getElementById('hint-button').disabled = true;
+
+            this.updateNextButtonVisibility();
         } else {
             this.showMessage('Incorrect answer, try again!', 'danger');
             input.value = '';
