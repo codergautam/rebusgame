@@ -49,10 +49,13 @@ class PuzzleGame {
             answerInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') this.checkAnswer();
             });
-            answerInput.addEventListener('input', () => {
-                const formattedText = this.formatInputText(answerInput.value);
-                if (formattedText !== answerInput.value) {
-                    answerInput.value = formattedText;
+            answerInput.addEventListener('input', (e) => {
+                const cursorPosition = e.target.selectionStart;
+                const formattedText = this.formatInputText(e.target.value);
+                if (formattedText !== e.target.value) {
+                    e.target.value = formattedText;
+                    // Restore cursor position after auto-formatting
+                    e.target.setSelectionRange(cursorPosition, cursorPosition);
                 }
                 this.updateLetterSpaces(true);
             });
@@ -234,6 +237,7 @@ class PuzzleGame {
 
         let html = '';
         const words = answer.split(' ');
+        const inputWords = userInput.split(' ');
 
         words.forEach((word, wordIndex) => {
             const wordContainer = document.createElement('div');
@@ -249,9 +253,8 @@ class PuzzleGame {
                     this.revealedLetters.has(letterKey)) {
                     span.textContent = letter;
                     span.className += ' revealed';
-                } else if (fromInput) {
-                    const inputWords = userInput.split(' ');
-                    const inputLetter = inputWords[wordIndex]?.[letterIndex]?.toLowerCase();
+                } else if (fromInput && inputWords[wordIndex]) {
+                    const inputLetter = inputWords[wordIndex][letterIndex];
                     span.textContent = inputLetter || '_';
                 } else {
                     span.textContent = '_';
@@ -463,9 +466,17 @@ class PuzzleGame {
         if (!this.currentPuzzle) return input;
 
         const puzzleWords = this.currentPuzzle.answer.split(' ');
-        const inputWords = input.trim().split(/\s+/);
+        let formattedWords = [];
+        let currentInput = input.replace(/\s+/g, ''); // Remove all spaces
+        let currentPosition = 0;
 
-        const formattedWords = inputWords.slice(0, puzzleWords.length);
+        // Format each word based on puzzle word lengths
+        for (let i = 0; i < puzzleWords.length; i++) {
+            const wordLength = puzzleWords[i].length;
+            const word = currentInput.slice(currentPosition, currentPosition + wordLength);
+            formattedWords.push(word);
+            currentPosition += wordLength;
+        }
 
         return formattedWords.join(' ');
     }
