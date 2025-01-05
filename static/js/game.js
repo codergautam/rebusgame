@@ -465,17 +465,33 @@ class PuzzleGame {
     formatInputText(input) {
         if (!this.currentPuzzle) return input;
 
+        // Remove any leading/trailing spaces and collapse multiple spaces
+        input = input.trim().replace(/\s+/g, ' ');
+
         const puzzleWords = this.currentPuzzle.answer.split(' ');
         let formattedWords = [];
-        let currentInput = input.replace(/\s+/g, ''); // Remove all spaces
+        let currentInput = input.replace(/\s+/g, ''); 
         let currentPosition = 0;
 
         // Format each word based on puzzle word lengths
-        for (let i = 0; i < puzzleWords.length; i++) {
+        for (let i = 0; i < puzzleWords.length && currentPosition < currentInput.length; i++) {
             const wordLength = puzzleWords[i].length;
-            const word = currentInput.slice(currentPosition, currentPosition + wordLength);
-            formattedWords.push(word);
-            currentPosition += wordLength;
+            const remainingInput = currentInput.slice(currentPosition);
+
+            // Only take up to the word length for current word
+            const word = remainingInput.slice(0, wordLength);
+
+            if (word.length > 0) {
+                formattedWords.push(word);
+            }
+
+            // Only advance position if we got a full word
+            if (word.length === wordLength) {
+                currentPosition += wordLength;
+            } else {
+                // If word is incomplete, don't add more spaces
+                break;
+            }
         }
 
         return formattedWords.join(' ');
