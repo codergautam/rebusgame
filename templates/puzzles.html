@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Puzzles - Redus Puzzle Game</title>
+    <title>All Puzzles - Rebus Game - Picture Word Puzzles</title>
+    <meta name="description" content="Browse our complete collection of rebus puzzles and brain teasers. Find new challenges, track your progress, and improve your problem-solving skills with visual word puzzles.">
     <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
     <link href="/static/css/styles.css" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="/">Redus Puzzle</a>
+            <a class="navbar-brand" href="/">Rebus Game</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -25,6 +26,22 @@
     </nav>
 
     <div class="container mt-4">
+        <div id="achievements" class="row mb-4 d-none">
+            <div class="col-12">
+                <div class="card bg-dark">
+                    <div class="card-body">
+                        <h3>Your Achievements</h3>
+                        <div class="d-flex flex-wrap gap-2" id="badges-container">
+                            <!-- Badges will be added here dynamically -->
+                        </div>
+                        <div class="mt-3">
+                            <h4>Total Points: <span id="total-points">0</span></h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <h2 class="mb-4">All Puzzles</h2>
         <div class="row" id="puzzles-grid">
             <!-- Puzzles will be dynamically inserted here -->

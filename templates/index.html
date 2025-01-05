@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redus Puzzle Game</title>
+    <title>Rebus Game - Play Rebus Puzzles & Brain Teasers Online</title>
+    <meta name="description" content="Challenge yourself with our collection of rebus puzzles and brain teasers. Solve visual word puzzles, earn points, unlock achievements, and train your brain with fun picture riddles.">
+    <meta name="keywords" content="rebus puzzles, brain teasers, word puzzles, picture riddles, puzzle game, rebus game">
+    <meta property="og:title" content="Rebus Game - Play Rebus Puzzles & Brain Teasers Online">
+    <meta property="og:description" content="Challenge yourself with our collection of rebus puzzles and brain teasers. Solve visual word puzzles, earn points, and train your brain with fun picture riddles.">
+    <meta property="og:type" content="website">
     <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" rel="stylesheet">
     <link href="/static/css/styles.css" rel="stylesheet">
@@ -11,7 +16,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="/">Redus Puzzle</a>
+            <a class="navbar-brand" href="/">Rebus Game</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -26,6 +31,22 @@
     </nav>
 
     <div class="container mt-4">
+        <div id="achievements" class="row mb-4 d-none">
+            <div class="col-12">
+                <div class="card bg-dark">
+                    <div class="card-body">
+                        <h3>Your Achievements</h3>
+                        <div class="d-flex flex-wrap gap-2" id="badges-container">
+                            <!-- Badges will be added here dynamically -->
+                        </div>
+                        <div class="mt-3">
+                            <h4>Total Points: <span id="total-points">0</span></h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-md-8 offset-md-2">
                 <div class="card">
@@ -40,7 +61,7 @@
                         </div>
 
                         <div class="puzzle-image-container mb-4">
-                            <img id="puzzle-image" class="img-fluid rounded" src="" alt="Puzzle">
+                            <img id="puzzle-image" class="img-fluid rounded" src="" alt="Rebus Puzzle">
                         </div>
 
                         <div class="answer-section">
@@ -50,7 +71,7 @@
                                 <button class="btn btn-primary" id="submit-answer">Check Answer</button>
                             </div>
                             <div class="text-center mb-3">
-                                <button class="btn btn-outline-info" id="hint-button">Get Hint (-100 points)</button>
+                                <button class="btn btn-outline-info" id="hint-button">Get Hint (-50 points)</button>
                                 <button class="btn btn-success d-none" id="next-puzzle">Next Puzzle</button>
                             </div>
                             <div id="feedback" class="alert d-none"></div>

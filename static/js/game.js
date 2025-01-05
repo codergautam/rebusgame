@@ -8,8 +8,17 @@ class PuzzleGame {
         this.hintsRevealed = 0;
         this.revealedLetters = new Set();
 
+        this.achievements = {
+            'quick_solver': { name: 'Speed Demon', description: 'Solve a puzzle in under 30 seconds', type: 'bronze' },
+            'no_hints': { name: 'Pure Genius', description: 'Solve a puzzle without using hints', type: 'silver' },
+            'perfect_score': { name: 'Perfect Score', description: 'Get 1000 points in a single puzzle', type: 'gold' },
+            'puzzle_master': { name: 'Puzzle Master', description: 'Complete 10 puzzles', type: 'gold' },
+            'persistent': { name: 'Never Give Up', description: 'Solve a puzzle after 5 attempts', type: 'bronze' }
+        };
+
         this.loadPuzzles();
         this.setupEventListeners();
+        this.updateAchievements();
     }
 
     async loadPuzzles() {
@@ -51,6 +60,7 @@ class PuzzleGame {
     }
 
     handleHomePage() {
+        this.updateTotalPoints();
         const urlParams = new URLSearchParams(window.location.search);
         const puzzleId = urlParams.get('id');
 
@@ -59,6 +69,36 @@ class PuzzleGame {
         } else {
             this.loadRandomPuzzle();
         }
+    }
+
+    updateTotalPoints() {
+        const scores = this.getScores();
+        const total = Object.values(scores).reduce((sum, score) => sum + score, 0);
+        const totalPointsElements = document.querySelectorAll('#total-points');
+        totalPointsElements.forEach(element => {
+            element.textContent = total;
+        });
+
+        if (total > 0) {
+            document.getElementById('achievements').classList.remove('d-none');
+        }
+    }
+
+    updateAchievements() {
+        const unlockedAchievements = this.getUnlockedAchievements();
+        const container = document.getElementById('badges-container');
+        if (!container) return;
+
+        container.innerHTML = '';
+        Object.entries(unlockedAchievements).forEach(([id, achievement]) => {
+            const badge = document.createElement('div');
+            badge.className = `achievement-badge ${achievement.type}`;
+            badge.innerHTML = `
+                <span>${achievement.name}</span>
+                <span class="ms-2 opacity-75">${achievement.description}</span>
+            `;
+            container.appendChild(badge);
+        });
     }
 
     loadNextPuzzle() {
@@ -141,9 +181,9 @@ class PuzzleGame {
         const currentIndex = allPuzzleIds.indexOf(currentId);
 
         // Check if there are any uncompleted puzzles after current one
-        const hasNextUncompleted = allPuzzleIds.slice(currentIndex + 1).some(id => 
+        const hasNextUncompleted = allPuzzleIds.slice(currentIndex + 1).some(id =>
             !completed.includes(id.toString())
-        ) || allPuzzleIds.slice(0, currentIndex).some(id => 
+        ) || allPuzzleIds.slice(0, currentIndex).some(id =>
             !completed.includes(id.toString())
         );
 
@@ -172,7 +212,7 @@ class PuzzleGame {
                 const letterKey = `${wordIndex}-${letterIndex}`;
 
                 // Show revealed letters (first letters or random hints)
-                if ((letterIndex === 0 && this.hintsRevealed > wordIndex) || 
+                if ((letterIndex === 0 && this.hintsRevealed > wordIndex) ||
                     this.revealedLetters.has(letterKey)) {
                     span.textContent = letter;
                     span.className += ' revealed';
@@ -234,7 +274,7 @@ class PuzzleGame {
             const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
             const minutes = Math.floor(elapsed / 60);
             const seconds = elapsed % 60;
-            document.getElementById('timer').textContent = 
+            document.getElementById('timer').textContent =
                 `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
         }, 1000);
     }
@@ -249,6 +289,42 @@ class PuzzleGame {
         return Math.max(100, basePoints - timeDeduction - attemptsDeduction - hintDeduction);
     }
 
+    checkAchievements(points, timeElapsed, hintsUsed, attempts) {
+        const achievements = {};
+
+        if (timeElapsed <= 30) {
+            achievements.quick_solver = this.achievements.quick_solver;
+        }
+        if (hintsUsed === 0) {
+            achievements.no_hints = this.achievements.no_hints;
+        }
+        if (points === 1000) {
+            achievements.perfect_score = this.achievements.perfect_score;
+        }
+        if (attempts >= 5) {
+            achievements.persistent = this.achievements.persistent;
+        }
+
+        const completed = this.getCompletedPuzzles();
+        if (completed.length >= 10) {
+            achievements.puzzle_master = this.achievements.puzzle_master;
+        }
+
+        this.saveAchievements(achievements);
+        this.updateAchievements();
+    }
+
+    saveAchievements(newAchievements) {
+        const current = JSON.parse(localStorage.getItem('achievements') || '{}');
+        const updated = { ...current, ...newAchievements };
+        localStorage.setItem('achievements', JSON.stringify(updated));
+    }
+
+    getUnlockedAchievements() {
+        return JSON.parse(localStorage.getItem('achievements') || '{}');
+    }
+
+
     checkAnswer() {
         const input = document.getElementById('answer-input');
         const userAnswer = input.value.trim().toLowerCase();
@@ -259,9 +335,19 @@ class PuzzleGame {
 
         if (userAnswer === correctAnswer) {
             clearInterval(this.timer);
+            const timeElapsed = (Date.now() - this.startTime) / 1000;
             const points = this.calculatePoints();
+
+            this.checkAchievements(
+                points,
+                timeElapsed,
+                this.hintsRevealed + this.revealedLetters.size,
+                this.attempts
+            );
+
             this.savePuzzleCompletion(this.currentPuzzle.id, points);
             this.showMessage(`Correct! You earned ${points} points!`, 'success');
+            this.updateTotalPoints();
 
             // Show next puzzle button and disable inputs
             document.getElementById('next-puzzle').classList.remove('d-none');
@@ -321,7 +407,7 @@ class PuzzleGame {
                     <img src="/puzzles/${puzzle.imgPath}" class="card-img-top" alt="Puzzle ${id}">
                     <div class="card-body">
                         <h5 class="card-title">Puzzle #${id}</h5>
-                        ${isCompleted ? 
+                        ${isCompleted ?
                             `<span class="badge bg-success points">Points: ${points}</span>` :
                             '<span class="badge bg-secondary points">Not completed</span>'}
                     </div>

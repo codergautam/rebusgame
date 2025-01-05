@@ -71,6 +71,33 @@
     right: 10px;
 }
 
+.achievement-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: var(--bs-dark);
+    border: 2px solid var(--bs-info);
+    border-radius: 2rem;
+    color: var(--bs-light);
+    margin: 0.25rem;
+    animation: badgeUnlock 0.5s ease-out;
+}
+
+.achievement-badge.gold {
+    border-color: var(--bs-warning);
+    background: linear-gradient(45deg, var(--bs-dark), var(--bs-warning-text));
+}
+
+.achievement-badge.silver {
+    border-color: var(--bs-secondary);
+    background: linear-gradient(45deg, var(--bs-dark), var(--bs-secondary));
+}
+
+.achievement-badge.bronze {
+    border-color: #cd7f32;
+    background: linear-gradient(45deg, var(--bs-dark), #cd7f32);
+}
+
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-10px); }
@@ -80,4 +107,10 @@
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
+}
+
+@keyframes badgeUnlock {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
 }
