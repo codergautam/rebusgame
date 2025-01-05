@@ -494,7 +494,16 @@ class PuzzleGame {
             }
         }
 
-        return formattedWords.join(' ');
+        const result = formattedWords.join(' ');
+        // Move cursor to end after formatting
+        setTimeout(() => {
+            const input = document.getElementById('answer-input');
+            if (input) {
+                input.selectionStart = input.selectionEnd = input.value.length;
+            }
+        }, 0);
+        
+        return result;
     }
 }
 
