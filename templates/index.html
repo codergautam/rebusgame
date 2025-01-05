@@ -11,6 +11,7 @@
     <meta property="og:type" content="website">
     <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/static/css/styles.css" rel="stylesheet">
 </head>
 <body>
@@ -26,27 +27,21 @@
                         <a class="nav-link" href="/puzzles">All Puzzles</a>
                     </li>
                 </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <button class="btn nav-link position-relative" data-bs-toggle="modal" data-bs-target="#achievementsModal">
+                            <i class="fas fa-trophy"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" id="achievementNotification">
+                                New
+                            </span>
+                        </button>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
 
     <div class="container mt-4">
-        <div id="achievements" class="row mb-4 d-none">
-            <div class="col-12">
-                <div class="card bg-dark">
-                    <div class="card-body">
-                        <h3>Your Achievements</h3>
-                        <div class="d-flex flex-wrap gap-2" id="badges-container">
-                            <!-- Badges will be added here dynamically -->
-                        </div>
-                        <div class="mt-3">
-                            <h4>Total Points: <span id="total-points">0</span></h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="row">
             <div class="col-md-8 offset-md-2">
                 <div class="card">
@@ -77,6 +72,69 @@
                             <div id="feedback" class="alert d-none"></div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievements Modal -->
+    <div class="modal fade" id="achievementsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Achievements</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="achievements-container" id="modal-achievements">
+                        <div class="total-points mb-4">
+                            <h4>Total Points: <span id="modal-total-points">0</span></h4>
+                        </div>
+                        <div id="modal-badges-container">
+                            <!-- Badges will be added here dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tutorial Modal -->
+    <div class="modal fade" id="tutorialModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">How to Play</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="tutorialCarousel" class="carousel slide">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="tutorial-step text-center p-4">
+                                    <i class="fas fa-puzzle-piece fa-3x mb-3"></i>
+                                    <h4>Welcome to Rebus Game!</h4>
+                                    <p>Each puzzle is a visual word puzzle where pictures, symbols, and letters combine to represent a word or phrase.</p>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="tutorial-step text-center p-4">
+                                    <i class="fas fa-lightbulb fa-3x mb-3"></i>
+                                    <h4>Solving Puzzles</h4>
+                                    <p>Type your answer in the input box. Use hints if you're stuck, but remember - each hint costs points! Earn achievements and compete for high scores.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#tutorialCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#tutorialCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Start Playing!</button>
                 </div>
             </div>
         </div>

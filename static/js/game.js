@@ -7,6 +7,7 @@ class PuzzleGame {
         this.timer = null;
         this.hintsRevealed = 0;
         this.revealedLetters = new Set();
+        this.newAchievements = false;
 
         this.achievements = {
             'quick_solver': { name: 'Speed Demon', description: 'Solve a puzzle in under 30 seconds', type: 'bronze' },
@@ -18,6 +19,7 @@ class PuzzleGame {
 
         this.loadPuzzles();
         this.setupEventListeners();
+        this.checkFirstVisit();
         this.updateAchievements();
     }
 
@@ -57,6 +59,22 @@ class PuzzleGame {
         if (nextButton) {
             nextButton.addEventListener('click', () => this.loadNextPuzzle());
         }
+
+        // Clear notification when opening achievements modal
+        const achievementsModal = document.getElementById('achievementsModal');
+        if (achievementsModal) {
+            achievementsModal.addEventListener('show.bs.modal', () => {
+                this.clearAchievementNotification();
+            });
+        }
+    }
+
+    checkFirstVisit() {
+        if (!localStorage.getItem('hasVisited')) {
+            localStorage.setItem('hasVisited', 'true');
+            const tutorialModal = new bootstrap.Modal(document.getElementById('tutorialModal'));
+            tutorialModal.show();
+        }
     }
 
     handleHomePage() {
@@ -74,30 +92,45 @@ class PuzzleGame {
     updateTotalPoints() {
         const scores = this.getScores();
         const total = Object.values(scores).reduce((sum, score) => sum + score, 0);
-        const totalPointsElements = document.querySelectorAll('#total-points');
+        const totalPointsElements = document.querySelectorAll('#total-points, #modal-total-points');
         totalPointsElements.forEach(element => {
             element.textContent = total;
         });
+    }
 
-        if (total > 0) {
-            document.getElementById('achievements').classList.remove('d-none');
+    showAchievementNotification() {
+        const notification = document.getElementById('achievementNotification');
+        if (notification) {
+            notification.classList.remove('d-none');
+            notification.classList.add('badge-notification');
+        }
+    }
+
+    clearAchievementNotification() {
+        const notification = document.getElementById('achievementNotification');
+        if (notification) {
+            notification.classList.add('d-none');
+            notification.classList.remove('badge-notification');
+            this.newAchievements = false;
         }
     }
 
     updateAchievements() {
         const unlockedAchievements = this.getUnlockedAchievements();
-        const container = document.getElementById('badges-container');
-        if (!container) return;
+        ['badges-container', 'modal-badges-container'].forEach(containerId => {
+            const container = document.getElementById(containerId);
+            if (!container) return;
 
-        container.innerHTML = '';
-        Object.entries(unlockedAchievements).forEach(([id, achievement]) => {
-            const badge = document.createElement('div');
-            badge.className = `achievement-badge ${achievement.type}`;
-            badge.innerHTML = `
-                <span>${achievement.name}</span>
-                <span class="ms-2 opacity-75">${achievement.description}</span>
-            `;
-            container.appendChild(badge);
+            container.innerHTML = '';
+            Object.entries(unlockedAchievements).forEach(([id, achievement]) => {
+                const badge = document.createElement('div');
+                badge.className = `achievement-badge ${achievement.type}`;
+                badge.innerHTML = `
+                    <span>${achievement.name}</span>
+                    <span class="ms-2 opacity-75">${achievement.description}</span>
+                `;
+                container.appendChild(badge);
+            });
         });
     }
 
@@ -312,6 +345,8 @@ class PuzzleGame {
 
         this.saveAchievements(achievements);
         this.updateAchievements();
+        if (Object.keys(achievements).length > 0) this.newAchievements = true;
+        this.showAchievementNotification();
     }
 
     saveAchievements(newAchievements) {

@@ -98,6 +98,29 @@
     background: linear-gradient(45deg, var(--bs-dark), #cd7f32);
 }
 
+.tutorial-step {
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.tutorial-step i {
+    color: var(--bs-info);
+}
+
+/* Animation for achievement notification */
+@keyframes notification-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.badge-notification {
+    animation: notification-pulse 1s infinite;
+}
+
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-10px); }
