@@ -52,6 +52,23 @@
     animation: shake 0.5s ease-in-out;
 }
 
+.shake-animation {
+    animation: shake 0.5s ease-in-out;
+}
+
+#feedback {
+    margin-bottom: 1rem;
+}
+
+.answer-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.answer-section #feedback {
+    order: -1;
+}
+
 .puzzle-card {
     transition: transform 0.2s;
     cursor: pointer;

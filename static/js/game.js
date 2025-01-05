@@ -415,6 +415,8 @@ class PuzzleGame {
             this.updateNextButtonVisibility();
         } else {
             this.showMessage('Incorrect answer, try again!', 'danger');
+            input.classList.add('shake-animation');
+            setTimeout(() => input.classList.remove('shake-animation'), 500);
             input.value = '';
             this.updateLetterSpaces();
         }
