@@ -384,12 +384,14 @@ class PuzzleGame {
             this.showMessage(`Correct! You earned ${points} points!`, 'success');
             this.updateTotalPoints();
             
-            // Fire confetti
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
+            // Fire confetti only on first attempt
+            if (this.attempts === 1) {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
 
             // Show next puzzle button and disable inputs
             document.getElementById('next-puzzle').classList.remove('d-none');
