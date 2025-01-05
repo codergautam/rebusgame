@@ -38,15 +38,19 @@
                                 <span class="badge bg-warning" id="attempts">Attempts: 0</span>
                             </div>
                         </div>
-                        
+
                         <div class="puzzle-image-container mb-4">
                             <img id="puzzle-image" class="img-fluid rounded" src="" alt="Puzzle">
                         </div>
 
                         <div class="answer-section">
+                            <div id="letter-spaces" class="mb-3 text-center"></div>
                             <div class="input-group mb-3">
                                 <input type="text" id="answer-input" class="form-control" placeholder="Enter your answer">
                                 <button class="btn btn-primary" id="submit-answer">Check Answer</button>
+                            </div>
+                            <div class="text-center mb-3">
+                                <button class="btn btn-outline-info" id="hint-button">Get Hint (-100 points)</button>
                             </div>
                             <div id="feedback" class="alert d-none"></div>
                         </div>
