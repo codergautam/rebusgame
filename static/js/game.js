@@ -191,6 +191,10 @@ class PuzzleGame {
             ...this.puzzles[id]
         };
 
+        const completed = this.getCompletedPuzzles();
+        const isCompleted = completed.includes(id);
+        const scores = this.getScores();
+
         document.getElementById('puzzle-title').textContent = `Puzzle #${id}`;
         document.getElementById('puzzle-image').src = `/puzzles/${this.currentPuzzle.imgPath}`;
 
@@ -198,16 +202,28 @@ class PuzzleGame {
         this.hintsRevealed = 0;
         this.revealedLetters.clear();
         document.getElementById('attempts').textContent = `Attempts: ${this.attempts}`;
-        document.getElementById('answer-input').value = '';
-        document.getElementById('feedback').classList.add('d-none');
+        
+        const answerInput = document.getElementById('answer-input');
+        if (isCompleted) {
+            answerInput.value = this.currentPuzzle.answer;
+            answerInput.disabled = true;
+            document.getElementById('submit-answer').disabled = true;
+            document.getElementById('hint-button').disabled = true;
+            document.getElementById('next-puzzle').classList.remove('d-none');
+            document.getElementById('points').textContent = `Points: ${scores[id] || 0}`;
+            this.showMessage('You have already completed this puzzle!', 'success');
+        } else {
+            answerInput.value = '';
+            answerInput.disabled = false;
+            document.getElementById('submit-answer').disabled = false;
+            document.getElementById('hint-button').disabled = false;
+            document.getElementById('next-puzzle').classList.add('d-none');
+            document.getElementById('points').textContent = 'Points: 0';
+            document.getElementById('feedback').classList.add('d-none');
+            this.startTime = Date.now();
+            this.startTimer();
+        }
 
-        document.getElementById('next-puzzle').classList.add('d-none');
-        document.getElementById('answer-input').disabled = false;
-        document.getElementById('submit-answer').disabled = false;
-        document.getElementById('hint-button').disabled = false;
-
-        this.startTime = Date.now();
-        this.startTimer();
         this.updateLetterSpaces();
         this.updateNextButtonVisibility();
     }
