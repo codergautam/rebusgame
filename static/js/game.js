@@ -202,7 +202,7 @@ class PuzzleGame {
         this.hintsRevealed = 0;
         this.revealedLetters.clear();
         document.getElementById('attempts').textContent = `Attempts: ${this.attempts}`;
-        
+
         const answerInput = document.getElementById('answer-input');
         if (isCompleted) {
             answerInput.value = this.currentPuzzle.answer;
@@ -488,7 +488,7 @@ class PuzzleGame {
 
         const puzzleWords = this.currentPuzzle.answer.split(' ');
         let formattedWords = [];
-        let currentInput = input.replace(/\s+/g, ''); 
+        let currentInput = input.replace(/\s+/g, '');
         let currentPosition = 0;
 
         // Format each word based on puzzle word lengths
@@ -520,7 +520,7 @@ class PuzzleGame {
                 input.selectionStart = input.selectionEnd = input.value.length;
             }
         }, 0);
-        
+
         return result;
     }
 }
