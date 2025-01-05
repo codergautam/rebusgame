@@ -8,6 +8,7 @@ class PuzzleGame {
         this.hintsRevealed = 0;
         this.revealedLetters = new Set();
         this.newAchievements = false;
+        this.activeLetterSpace = null;
 
         this.achievements = {
             'quick_solver': { name: 'Speed Demon', description: 'Solve a puzzle in under 30 seconds', type: 'bronze' },
@@ -26,6 +27,9 @@ class PuzzleGame {
     async loadPuzzles() {
         try {
             const response = await fetch('/puzzles/puzzles.json');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             this.puzzles = await response.json();
 
             if (window.location.pathname === '/') {
@@ -35,21 +39,45 @@ class PuzzleGame {
             }
         } catch (error) {
             console.error('Error loading puzzles:', error);
+            document.getElementById('puzzle-title').textContent = 'Error loading puzzle';
         }
     }
 
     setupEventListeners() {
-        const submitButton = document.getElementById('submit-answer');
-        const answerInput = document.getElementById('answer-input');
+        const letterSpaces = document.getElementById('letter-spaces');
         const hintButton = document.getElementById('hint-button');
         const nextButton = document.getElementById('next-puzzle');
 
-        if (submitButton && answerInput) {
-            submitButton.addEventListener('click', () => this.checkAnswer());
-            answerInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') this.checkAnswer();
+        if (letterSpaces) {
+            letterSpaces.addEventListener('click', (e) => {
+                const clickedSpace = e.target.closest('.letter-space');
+                if (clickedSpace && !clickedSpace.classList.contains('revealed')) {
+                    this.setActiveLetter(clickedSpace);
+                }
             });
-            answerInput.addEventListener('input', () => this.updateLetterSpaces(true));
+
+            document.addEventListener('keydown', (e) => {
+                if (!this.currentPuzzle) return;
+
+                if (e.key === 'Enter') {
+                    this.checkAnswer();
+                    return;
+                }
+
+                if (e.key === 'Backspace') {
+                    this.handleBackspace();
+                    return;
+                }
+
+                if (e.key === ' ') {
+                    this.moveToNextWord();
+                    return;
+                }
+
+                if (e.key.length === 1 && e.key.match(/[a-zA-Z]/)) {
+                    this.handleLetterInput(e.key);
+                }
+            });
         }
 
         if (hintButton) {
@@ -60,12 +88,109 @@ class PuzzleGame {
             nextButton.addEventListener('click', () => this.loadNextPuzzle());
         }
 
-        // Clear notification when opening achievements modal
         const achievementsModal = document.getElementById('achievementsModal');
         if (achievementsModal) {
             achievementsModal.addEventListener('show.bs.modal', () => {
                 this.clearAchievementNotification();
             });
+        }
+    }
+
+    setActiveLetter(letterSpace) {
+        const allSpaces = document.querySelectorAll('.letter-space');
+        allSpaces.forEach(space => space.classList.remove('active', 'focused'));
+
+        if (letterSpace) {
+            letterSpace.classList.add('active', 'focused');
+            this.activeLetterSpace = letterSpace;
+        }
+    }
+
+    handleLetterInput(letter) {
+        if (!this.activeLetterSpace || this.activeLetterSpace.classList.contains('revealed')) {
+            const emptySpace = Array.from(document.querySelectorAll('.letter-space'))
+                .find(space => !space.textContent.trim() && !space.classList.contains('revealed'));
+
+            if (emptySpace) {
+                this.setActiveLetter(emptySpace);
+            } else {
+                return;
+            }
+        }
+
+        this.activeLetterSpace.textContent = letter.toUpperCase();
+
+        const nextSpace = Array.from(document.querySelectorAll('.letter-space'))
+            .find(space =>
+                !space.textContent.trim() &&
+                !space.classList.contains('revealed') &&
+                space !== this.activeLetterSpace
+            );
+
+        if (nextSpace) {
+            this.setActiveLetter(nextSpace);
+        }
+    }
+
+    handleBackspace() {
+        if (!this.activeLetterSpace) {
+            const lastFilledSpace = Array.from(document.querySelectorAll('.letter-space'))
+                .reverse()
+                .find(space =>
+                    space.textContent.trim() &&
+                    !space.classList.contains('revealed')
+                );
+
+            if (lastFilledSpace) {
+                this.setActiveLetter(lastFilledSpace);
+            }
+            return;
+        }
+
+        if (this.activeLetterSpace.classList.contains('revealed')) {
+            const prevSpace = Array.from(document.querySelectorAll('.letter-space'))
+                .reverse()
+                .find(space =>
+                    !space.classList.contains('revealed') &&
+                    space.textContent.trim()
+                );
+
+            if (prevSpace) {
+                this.setActiveLetter(prevSpace);
+            }
+            return;
+        }
+
+        this.activeLetterSpace.textContent = '';
+
+        const prevSpace = Array.from(document.querySelectorAll('.letter-space'))
+            .reverse()
+            .find(space =>
+                space.textContent.trim() &&
+                !space.classList.contains('revealed') &&
+                space !== this.activeLetterSpace
+            );
+
+        if (prevSpace) {
+            this.setActiveLetter(prevSpace);
+        }
+    }
+
+    moveToNextWord() {
+        const allSpaces = Array.from(document.querySelectorAll('.letter-space'));
+        const currentIndex = allSpaces.indexOf(this.activeLetterSpace);
+
+        if (currentIndex === -1) return;
+
+        let nextWordStart = allSpaces
+            .slice(currentIndex + 1)
+            .find(space =>
+                space.classList.contains('word-start') &&
+                !space.classList.contains('revealed')
+            );
+
+        if (nextWordStart) {
+            this.setActiveLetter(nextWordStart);
         }
     }
 
@@ -140,7 +265,6 @@ class PuzzleGame {
         const allPuzzleIds = Object.keys(this.puzzles).map(Number).sort((a, b) => a - b);
         const currentIndex = allPuzzleIds.indexOf(currentId);
 
-        // Find the next uncompleted puzzle after current
         let nextId = null;
         for (let i = currentIndex + 1; i < allPuzzleIds.length; i++) {
             if (!completed.includes(allPuzzleIds[i].toString())) {
@@ -149,7 +273,6 @@ class PuzzleGame {
             }
         }
 
-        // If no uncompleted puzzles after current, find first uncompleted
         if (nextId === null) {
             for (let i = 0; i < currentIndex; i++) {
                 if (!completed.includes(allPuzzleIds[i].toString())) {
@@ -195,7 +318,6 @@ class PuzzleGame {
         document.getElementById('answer-input').value = '';
         document.getElementById('feedback').classList.add('d-none');
 
-        // Reset UI state
         document.getElementById('next-puzzle').classList.add('d-none');
         document.getElementById('answer-input').disabled = false;
         document.getElementById('submit-answer').disabled = false;
@@ -205,6 +327,7 @@ class PuzzleGame {
         this.startTimer();
         this.updateLetterSpaces();
         this.updateNextButtonVisibility();
+        this.activeLetterSpace = null;
     }
 
     updateNextButtonVisibility() {
@@ -213,7 +336,6 @@ class PuzzleGame {
         const allPuzzleIds = Object.keys(this.puzzles).map(Number).sort((a, b) => a - b);
         const currentIndex = allPuzzleIds.indexOf(currentId);
 
-        // Check if there are any uncompleted puzzles after current one
         const hasNextUncompleted = allPuzzleIds.slice(currentIndex + 1).some(id =>
             !completed.includes(id.toString())
         ) || allPuzzleIds.slice(0, currentIndex).some(id =>
@@ -228,9 +350,9 @@ class PuzzleGame {
 
     updateLetterSpaces(fromInput = false) {
         const letterSpacesContainer = document.getElementById('letter-spaces');
-        const answer = this.currentPuzzle.answer;
-        const userInput = document.getElementById('answer-input').value;
+        if (!this.currentPuzzle || !letterSpacesContainer) return;
 
+        const answer = this.currentPuzzle.answer;
         let html = '';
         const words = answer.split(' ');
 
@@ -240,19 +362,14 @@ class PuzzleGame {
 
             word.split('').forEach((letter, letterIndex) => {
                 const span = document.createElement('span');
-                span.className = 'letter-space';
+                span.className = `letter-space ${letterIndex === 0 ? 'word-start' : ''}`;
 
                 const letterKey = `${wordIndex}-${letterIndex}`;
 
-                // Show revealed letters (first letters or random hints)
                 if ((letterIndex === 0 && this.hintsRevealed > wordIndex) ||
                     this.revealedLetters.has(letterKey)) {
                     span.textContent = letter;
-                    span.className += ' revealed';
-                } else if (fromInput) {
-                    const inputWords = userInput.split(' ');
-                    const inputLetter = inputWords[wordIndex]?.[letterIndex]?.toLowerCase();
-                    span.textContent = inputLetter || '_';
+                    span.classList.add('revealed');
                 } else {
                     span.textContent = '_';
                 }
@@ -270,11 +387,9 @@ class PuzzleGame {
         const words = this.currentPuzzle.answer.split(' ');
         const allLetterPositions = [];
 
-        // First reveal first letters of each word
         if (this.hintsRevealed < words.length) {
             this.hintsRevealed++;
         } else {
-            // Then reveal random letters (excluding first letters and already revealed)
             words.forEach((word, wordIndex) => {
                 word.split('').forEach((_, letterIndex) => {
                     const letterKey = `${wordIndex}-${letterIndex}`;
@@ -295,7 +410,6 @@ class PuzzleGame {
 
         this.updateLetterSpaces();
 
-        // Deduct points for using hint
         const currentPoints = parseInt(document.getElementById('points').textContent.split(': ')[1]);
         document.getElementById('points').textContent = `Points: ${Math.max(0, currentPoints - 50)}`;
     }
@@ -361,14 +475,16 @@ class PuzzleGame {
 
 
     checkAnswer() {
-        const input = document.getElementById('answer-input');
-        const userAnswer = input.value.trim().toLowerCase();
-        const correctAnswer = this.currentPuzzle.answer.toLowerCase();
+        const letterSpaces = document.querySelectorAll('.letter-space');
+        const userAnswer = Array.from(letterSpaces)
+            .map(space => space.textContent.trim() || '_')
+            .join('');
+        const correctAnswer = this.currentPuzzle.answer.toUpperCase();
 
         this.attempts++;
         document.getElementById('attempts').textContent = `Attempts: ${this.attempts}`;
 
-        if (userAnswer === correctAnswer) {
+        if (userAnswer.replace(/_/g, '') === correctAnswer.replace(/ /g, '')) {
             clearInterval(this.timer);
             const timeElapsed = (Date.now() - this.startTime) / 1000;
             const points = this.calculatePoints();
@@ -384,17 +500,30 @@ class PuzzleGame {
             this.showMessage(`Correct! You earned ${points} points!`, 'success');
             this.updateTotalPoints();
 
-            // Show next puzzle button and disable inputs
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+
             document.getElementById('next-puzzle').classList.remove('d-none');
-            input.disabled = true;
-            document.getElementById('submit-answer').disabled = true;
+            letterSpaces.forEach(space => {
+                space.style.pointerEvents = 'none';
+                if (!space.classList.contains('revealed')) {
+                    space.textContent = correctAnswer[Array.from(letterSpaces).indexOf(space)];
+                }
+            });
             document.getElementById('hint-button').disabled = true;
 
             this.updateNextButtonVisibility();
         } else {
             this.showMessage('Incorrect answer, try again!', 'danger');
-            input.value = '';
-            this.updateLetterSpaces();
+            letterSpaces.forEach(space => {
+                if (!space.classList.contains('revealed')) {
+                    space.textContent = '';
+                }
+            });
+            this.setActiveLetter(Array.from(letterSpaces).find(space => !space.classList.contains('revealed')));
         }
     }
 
@@ -443,8 +572,8 @@ class PuzzleGame {
                     <div class="card-body">
                         <h5 class="card-title">Puzzle #${id}</h5>
                         ${isCompleted ?
-                            `<span class="badge bg-success points">Points: ${points}</span>` :
-                            '<span class="badge bg-secondary points">Not completed</span>'}
+                `<span class="badge bg-success points">Points: ${points}</span>` :
+                '<span class="badge bg-secondary points">Not completed</span>'}
                     </div>
                 </div>
             `;

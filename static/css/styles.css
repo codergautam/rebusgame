@@ -38,10 +38,26 @@
     font-weight: bold;
     border-bottom: 2px solid var(--bs-info);
     color: var(--bs-light);
+    cursor: text;
+    user-select: none;
+    transition: background-color 0.2s ease;
 }
 
 .letter-space.revealed {
     color: var(--bs-warning);
+    cursor: not-allowed;
+}
+
+.letter-space.focused {
+    background-color: rgba(var(--bs-info-rgb), 0.1);
+}
+
+.letter-space.active {
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    50% { border-color: transparent; }
 }
 
 .feedback-correct {
@@ -136,4 +152,21 @@
     0% { transform: scale(0); opacity: 0; }
     50% { transform: scale(1.2); }
     100% { transform: scale(1); opacity: 1; }
+}
+
+/* Mobile optimization */
+@media (max-width: 576px) {
+    .letter-space {
+        width: 25px;
+        height: 35px;
+        line-height: 35px;
+        font-size: 1rem;
+        margin: 0 1px;
+    }
+
+    .stats .badge {
+        margin: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
 }
