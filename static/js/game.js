@@ -30,6 +30,7 @@ class PuzzleGame {
         const submitButton = document.getElementById('submit-answer');
         const answerInput = document.getElementById('answer-input');
         const hintButton = document.getElementById('hint-button');
+        const nextButton = document.getElementById('next-puzzle');
 
         if (submitButton && answerInput) {
             submitButton.addEventListener('click', () => this.checkAnswer());
@@ -41,6 +42,10 @@ class PuzzleGame {
 
         if (hintButton) {
             hintButton.addEventListener('click', () => this.showHint());
+        }
+
+        if (nextButton) {
+            nextButton.addEventListener('click', () => this.loadRandomPuzzle());
         }
     }
 
@@ -66,6 +71,12 @@ class PuzzleGame {
 
         const randomId = available[Math.floor(Math.random() * available.length)];
         this.loadPuzzle(randomId);
+
+        // Reset UI state
+        document.getElementById('next-puzzle').classList.add('d-none');
+        document.getElementById('answer-input').disabled = false;
+        document.getElementById('submit-answer').disabled = false;
+        document.getElementById('hint-button').disabled = false;
     }
 
     loadPuzzle(id) {
@@ -80,6 +91,8 @@ class PuzzleGame {
         this.attempts = 0;
         this.hintsRevealed = 0;
         document.getElementById('attempts').textContent = `Attempts: ${this.attempts}`;
+        document.getElementById('answer-input').value = '';
+        document.getElementById('feedback').classList.add('d-none');
 
         this.startTime = Date.now();
         this.startTimer();
@@ -102,13 +115,14 @@ class PuzzleGame {
                 const span = document.createElement('span');
                 span.className = 'letter-space';
 
-                if (fromInput) {
+                // Always show revealed hints, regardless of input
+                if (letterIndex === 0 && this.hintsRevealed > wordIndex) {
+                    span.textContent = letter;
+                    span.className += ' revealed';
+                } else if (fromInput) {
                     const inputWords = userInput.split(' ');
                     const inputLetter = inputWords[wordIndex]?.[letterIndex]?.toLowerCase();
                     span.textContent = inputLetter || '_';
-                } else if (letterIndex === 0 && this.hintsRevealed > wordIndex) {
-                    span.textContent = letter;
-                    span.className += ' revealed';
                 } else {
                     span.textContent = '_';
                 }
@@ -172,7 +186,12 @@ class PuzzleGame {
             const points = this.calculatePoints();
             this.savePuzzleCompletion(this.currentPuzzle.id, points);
             this.showMessage(`Correct! You earned ${points} points!`, 'success');
-            setTimeout(() => window.location.href = '/', 2000);
+
+            // Show next puzzle button and disable inputs
+            document.getElementById('next-puzzle').classList.remove('d-none');
+            input.disabled = true;
+            document.getElementById('submit-answer').disabled = true;
+            document.getElementById('hint-button').disabled = true;
         } else {
             this.showMessage('Incorrect answer, try again!', 'danger');
             input.value = '';
