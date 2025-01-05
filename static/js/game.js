@@ -14,7 +14,12 @@ class PuzzleGame {
             'no_hints': { name: 'Pure Genius', description: 'Solve a puzzle without using hints', type: 'silver' },
             'perfect_score': { name: 'Perfect Score', description: 'Get 1000 points in a single puzzle', type: 'gold' },
             'puzzle_master': { name: 'Puzzle Master', description: 'Complete 10 puzzles', type: 'gold' },
-            'persistent': { name: 'Never Give Up', description: 'Solve a puzzle after 5 attempts', type: 'bronze' }
+            'persistent': { name: 'Never Give Up', description: 'Solve a puzzle after 5 attempts', type: 'bronze' },
+            'speed_runner': { name: 'Speed Runner', description: 'Complete 5 puzzles in under 2 minutes each', type: 'gold' },
+            'hint_master': { name: 'Hint Master', description: 'Complete a puzzle using exactly one hint', type: 'silver' },
+            'weekend_solver': { name: 'Weekend Solver', description: 'Solve puzzles on both Saturday and Sunday', type: 'bronze' },
+            'night_owl': { name: 'Night Owl', description: 'Complete a puzzle between midnight and 4am', type: 'bronze' },
+            'puzzle_streak': { name: 'On Fire', description: 'Complete 3 puzzles in a row without hints', type: 'gold' }
         };
 
         this.loadPuzzles();
@@ -351,8 +356,18 @@ class PuzzleGame {
 
     saveAchievements(newAchievements) {
         const current = JSON.parse(localStorage.getItem('achievements') || '{}');
-        const updated = { ...current, ...newAchievements };
+        const updated = { ...current };
+        let hasNewAchievements = false;
+        
+        Object.entries(newAchievements).forEach(([key, value]) => {
+            if (!current[key]) {
+                updated[key] = value;
+                hasNewAchievements = true;
+            }
+        });
+        
         localStorage.setItem('achievements', JSON.stringify(updated));
+        this.newAchievements = hasNewAchievements;
     }
 
     getUnlockedAchievements() {
