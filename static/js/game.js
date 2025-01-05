@@ -383,6 +383,13 @@ class PuzzleGame {
             this.savePuzzleCompletion(this.currentPuzzle.id, points);
             this.showMessage(`Correct! You earned ${points} points!`, 'success');
             this.updateTotalPoints();
+            
+            // Fire confetti
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
 
             // Show next puzzle button and disable inputs
             document.getElementById('next-puzzle').classList.remove('d-none');
